@@ -1,0 +1,36 @@
+
+# this shows various ways of quering the df
+
+# Initialize Spark session
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
+spark = SparkSession.builder.appName('Spark Playground').getOrCreate()
+
+# Load the customers.csv dataset
+df = spark.read.format('csv').option('header', 'true').load('/samples/customers.csv')
+
+
+# Show the first few rows of the DataFrame
+#df.show(5)
+
+# Display the DataFrame using the display() function.
+#display(df)
+
+#df_filtered = df.where("state = 'TX' and customer_id>20 ")
+#display(df_filtered)
+
+#df_filtered = df.where(col("state") == "TX")
+#df_filtered = df.where((col("state") == "TX") & (col("customer_id")==5))
+#display(df_filtered)
+
+# Register the DataFrame as a SQL table
+df.createOrReplaceTempView("customers")
+
+# Write pure SQL
+df_filtered = spark.sql("""
+    SELECT * 
+    FROM customers 
+    WHERE state = 'TX' 
+    AND customer_id >1
+""")
+display(df_filtered)
