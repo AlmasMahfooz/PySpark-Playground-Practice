@@ -1,0 +1,25 @@
+# Initialize Spark session
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
+spark = SparkSession.builder.appName('Spark Playground').getOrCreate()
+
+# Load the customers.csv dataset
+df = spark.read.format('csv').option('header', 'true').load('/samples/customers.csv')
+df2 = spark.read.format('csv').option('header', 'true').load('/samples/sales.csv')
+
+#df2.show()
+#df_filtered = df2.where((col("customer_id")>30))
+#df_filtered.show()
+
+
+df=df.where(col("state")=='TX')
+
+#showing records from both df
+#df_joined = df.join(df2, on="customer_id", how="inner")
+
+# 3. View the combined results
+#display(df_joined)
+
+#df_sales_only = df.join(df2, on="customer_id", how="inner").select(df2["*"])
+df_sales_only = df.join(df2, on="customer_id", how="inner").select("product_id", "total_amount")
+display(df_sales_only)
